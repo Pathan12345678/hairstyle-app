@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
-
 function LoadingDots() {
   return (
     <div style={{ display: "flex", gap: 8, justifyContent: "center", padding: "20px 0" }}>
@@ -195,14 +193,9 @@ const HAIR_LENGTH = [
       const messages = usePhoto && imageBase64
         ? [{ role:"user", content:[{ type:"image", source:{ type:"base64", media_type:"image/jpeg", data:imageBase64 }},{ type:"text", text:prompt }]}]
         : [{ role:"user", content:prompt }];
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/.netlify/functions/analyze", {
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-api-key": API_KEY,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
+        headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, messages }),
       });
       const data = await response.json();
@@ -314,4 +307,4 @@ const HAIR_LENGTH = [
       </div>
     </div>
   );
-      }
+            }
