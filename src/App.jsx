@@ -150,7 +150,9 @@ const HAIR_LENGTH = [
           </>
         )}
       </div>
-    </div>export default function HairStyleApp() {
+    </div>
+  );
+              }export default function HairStyleApp() {
   const [gender, setGender] = useState("");
   const [faceShape, setFaceShape] = useState("");
   const [hairLen, setHairLen] = useState("");
@@ -191,14 +193,9 @@ const HAIR_LENGTH = [
       const messages = usePhoto && imageBase64
         ? [{ role:"user", content:[{ type:"image", source:{ type:"base64", media_type:"image/jpeg", data:imageBase64 }},{ type:"text", text:prompt }]}]
         : [{ role:"user", content:prompt }];
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/analyze", {
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
+        headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, messages }),
       });
       const data = await response.json();
@@ -310,6 +307,4 @@ const HAIR_LENGTH = [
       </div>
     </div>
   );
-      }
-  );
-              }
+            }
