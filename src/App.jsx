@@ -193,15 +193,32 @@ const HAIR_LENGTH = [
       const messages = usePhoto && imageBase64
         ? [{ role:"user", content:[{ type:"image", source:{ type:"base64", media_type:"image/jpeg", data:imageBase64 }},{ type:"text", text:prompt }]}]
         : [{ role:"user", content:prompt }];
+
       const response = await fetch("/api/analyze", {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, messages }),
       });
+
+      if (!response.ok) {
+        throw new Error("API response error: " + response.status);
+      }
+
       const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       const text = data.content?.map((c) => c.text||"").join("")||"";
-      setResult(JSON.parse(text.replace(/```json|```/g,"").trim()));
-    } catch { setError("Kuch masla hua. Dobara try karein."); }
+      if (!text) throw new Error("Empty response");
+
+      const clean = text.replace(/```json|```/g,"").trim();
+      setResult(JSON.parse(clean));
+
+    } catch(err) {
+      setError("Masla: " + (err.message || "Dobara try karein."));
+    }
     finally { setLoading(false); }
   };
 
@@ -307,4 +324,4 @@ const HAIR_LENGTH = [
       </div>
     </div>
   );
-            }
+      }
