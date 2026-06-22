@@ -152,7 +152,7 @@ const HAIR_LENGTH = [
       </div>
     </div>
   );
-              }export default function HairStyleApp() {
+                                                         }export default function HairStyleApp() {
   const [gender, setGender] = useState("");
   const [faceShape, setFaceShape] = useState("");
   const [hairLen, setHairLen] = useState("");
@@ -190,6 +190,7 @@ const HAIR_LENGTH = [
       const prompt = usePhoto
         ? `You are a professional hair stylist. Analyze the face. Gender: ${gender}. Suggest EXACTLY 10 hairstyles. Respond ONLY valid JSON no markdown: {"faceShape":"...","faceFeatures":"...","confidence":"High or Medium","stylistNote":"...","hairstyles":[{"name":"...","reason":"...","tags":["..."]}]}`
         : `You are a professional hair stylist. Gender: ${gender}, Face Shape: ${faceShape}, Hair Length: ${hairLen==="any"?"Any":hairLen}. Suggest EXACTLY 10 hairstyles. Respond ONLY valid JSON no markdown: {"faceShape":"${faceShape}","stylistNote":"...","hairstyles":[{"name":"...","reason":"...","tags":["..."]}]}`;
+
       const messages = usePhoto && imageBase64
         ? [{ role:"user", content:[{ type:"image", source:{ type:"base64", media_type:"image/jpeg", data:imageBase64 }},{ type:"text", text:prompt }]}]
         : [{ role:"user", content:prompt }];
@@ -200,24 +201,19 @@ const HAIR_LENGTH = [
         body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, messages }),
       });
 
-      if (!response.ok) {
-        throw new Error("API response error: " + response.status);
-      }
-
       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (data.error) throw new Error(String(data.error));
 
       const text = data.content?.map((c) => c.text||"").join("")||"";
-      if (!text) throw new Error("Empty response");
+      if (!text) throw new Error("Koi response nahi aaya");
 
       const clean = text.replace(/```json|```/g,"").trim();
-      setResult(JSON.parse(clean));
+      const parsed = JSON.parse(clean);
+      setResult(parsed);
 
     } catch(err) {
-      setError("Masla: " + (err.message || "Dobara try karein."));
+      setError(typeof err === "string" ? err : err.message || "Dobara try karein");
     }
     finally { setLoading(false); }
   };
