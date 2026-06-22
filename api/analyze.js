@@ -17,9 +17,16 @@ export default async function handler(req, res) {
       body: JSON.stringify(req.body),
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(e) {
+      return res.status(500).json({ error: "Parse failed: " + text.substring(0,200) });
+    }
+
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ error: "API call failed" });
+    return res.status(500).json({ error: error.message || "API call failed" });
   }
 }
